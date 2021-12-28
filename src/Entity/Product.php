@@ -70,11 +70,6 @@ class Product
     private Collection $category;
 
     /**
-     * @ORM\ManyToMany(targetEntity=TagsProduct::class, mappedBy="product")
-     */
-    private Collection $tagsProducts;
-
-    /**
      * @ORM\OneToMany(targetEntity=RelatedProduct::class, mappedBy="product")
      */
     private Collection $relatedProducts;
@@ -84,12 +79,32 @@ class Product
      */
     private Collection $reviewsProducts;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private ?int $quantity;
+
+    /**
+     * @ORM\Column(type="datetime_immutable")
+     */
+    private ?\DateTimeImmutable $createdAt;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private ?string $tags;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private ?string $slug;
+
     public function __construct()
     {
         $this->category = new ArrayCollection();
-        $this->tagsProducts = new ArrayCollection();
         $this->relatedProducts = new ArrayCollection();
         $this->reviewsProducts = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -230,33 +245,6 @@ class Product
     }
 
     /**
-     * @return Collection|TagsProduct[]
-     */
-    public function getTagsProducts(): Collection
-    {
-        return $this->tagsProducts;
-    }
-
-    public function addTagsProduct(TagsProduct $tagsProduct): self
-    {
-        if (!$this->tagsProducts->contains($tagsProduct)) {
-            $this->tagsProducts[] = $tagsProduct;
-            $tagsProduct->addProduct($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTagsProduct(TagsProduct $tagsProduct): self
-    {
-        if ($this->tagsProducts->removeElement($tagsProduct)) {
-            $tagsProduct->removeProduct($this);
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection|RelatedProduct[]
      */
     public function getRelatedProducts(): Collection
@@ -312,6 +300,59 @@ class Product
                 $reviewsProduct->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->name;
+    }
+
+    public function getQuantity(): ?int
+    {
+        return $this->quantity;
+    }
+
+    public function setQuantity(int $quantity): self
+    {
+        $this->quantity = $quantity;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getTags(): ?string
+    {
+        return $this->tags;
+    }
+
+    public function setTags(?string $tags): self
+    {
+        $this->tags = $tags;
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
 
         return $this;
     }
