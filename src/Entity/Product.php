@@ -69,10 +69,6 @@ class Product
      */
     private Collection $category;
 
-    /**
-     * @ORM\OneToMany(targetEntity=RelatedProduct::class, mappedBy="product")
-     */
-    private Collection $relatedProducts;
 
     /**
      * @ORM\OneToMany(targetEntity=ReviewsProduct::class, mappedBy="product")
@@ -240,36 +236,6 @@ class Product
     public function removeCategory(Categories $category): self
     {
         $this->category->removeElement($category);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|RelatedProduct[]
-     */
-    public function getRelatedProducts(): Collection
-    {
-        return $this->relatedProducts;
-    }
-
-    public function addRelatedProduct(RelatedProduct $relatedProduct): self
-    {
-        if (!$this->relatedProducts->contains($relatedProduct)) {
-            $this->relatedProducts[] = $relatedProduct;
-            $relatedProduct->setProduct($this);
-        }
-
-        return $this;
-    }
-
-    public function removeRelatedProduct(RelatedProduct $relatedProduct): self
-    {
-        if ($this->relatedProducts->removeElement($relatedProduct)) {
-            // set the owning side to null (unless already changed)
-            if ($relatedProduct->getProduct() === $this) {
-                $relatedProduct->setProduct(null);
-            }
-        }
 
         return $this;
     }

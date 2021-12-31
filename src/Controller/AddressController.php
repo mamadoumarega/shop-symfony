@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Address;
 use App\Form\AddressType;
 use App\Repository\AddressRepository;
+use App\Services\CartServices;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,6 +17,14 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class AddressController extends AbstractController
 {
+
+    private EntityManagerInterface $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
     /**
      * @Route("/", name="address_index", methods={"GET"})
      */
@@ -29,7 +38,7 @@ class AddressController extends AbstractController
     /**
      * @Route("/new", name="address_new", methods={"GET", "POST"})
      */
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, CartServices $cartServices): Response
     {
         $address = new Address();
         $form = $this->createForm(AddressType::class, $address);
@@ -38,8 +47,12 @@ class AddressController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $user = $this->getUser();
             $address->setUser($user);
-            $entityManager->persist($address);
-            $entityManager->flush();
+            $this->entityManager->persist($address);
+            $this->entityManager->flush();
+
+            if ($cartServices->getFullCart()) {
+                return $this->redirectToRoute('checkout', [], Response::HTTP_SEE_OTHER);
+            }
 
             $this->addFlash('address_message', 'Your address has been saved');
             return $this->redirectToRoute('account', [], Response::HTTP_SEE_OTHER);
@@ -64,13 +77,13 @@ class AddressController extends AbstractController
     /**
      * @Route("/{id}/edit", name="address_edit", methods={"GET", "POST"})
      */
-    public function edit(Request $request, Address $address, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Address $address): Response
     {
         $form = $this->createForm(AddressType::class, $address);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            $this->entityManager->flush();
 
             $this->addFlash('address_message', 'Your address has been edited');
             return $this->redirectToRoute('account', [], Response::HTTP_SEE_OTHER);
@@ -85,11 +98,11 @@ class AddressController extends AbstractController
     /**
      * @Route("/{id}", name="address_delete", methods={"POST"})
      */
-    public function delete(Request $request, Address $address, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Address $address): Response
     {
         if ($this->isCsrfTokenValid('delete'.$address->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($address);
-            $entityManager->flush();
+            $this->entityManager->remove($address);
+            $this->entityManager->flush();
         }
 
         $this->addFlash('address_message', 'Your address has been deleted');

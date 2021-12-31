@@ -14,9 +14,12 @@
                     <div class="d-flex align-items-center justify-content-center justify-content-md-start">
                         <div class="lng_dropdown mr-2">
                             <select name="countries" class="custome_select">
-                                <option value='en' data-image="assets/images/eng.png" data-title="English">English</option>
+                                <option value='en' data-image="assets/images/eng.png" data-title="English">English
+                                </option>
                                 <option value='fn' data-image="assets/images/fn.png" data-title="France">France</option>
-                                <option value='us' data-image="assets/images/us.png" data-title="United States">United States</option>
+                                <option value='us' data-image="assets/images/us.png" data-title="United States">United
+                                    States
+                                </option>
                             </select>
                         </div>
                         <div class="mr-3">
@@ -37,10 +40,16 @@
                             <li><a href=""><i class="ti-control-shuffle"></i><span>Compare</span></a></li>
                             <li><a href=""><i class="ti-heart"></i><span>Wishlist</span></a></li>
                             {% if app.user %}
-                                <li><a href="{{ path('app_logout') }}"><i class="fa fa-sign-out-alt"></i><span>Logout</span></a></li>
+                                <li>
+                                    <a href="{{ path('app_logout') }}"><i class="fa fa-sign-out-alt"></i><span>Logout</span></a>
+                                </li>
+                                <li>
+                                    <a href="{{ path('account') }}"><i class="fa fa-user"></i><span>Account</span></a>
+                                </li>
                             {% else %}
                                 <li><a href="{{ path('app_login') }}"><i class="ti-user"></i><span>Login</span></a></li>
-                                <li><a href="{{ path('app_register') }}"><i class="fa fa-sign-in-alt"></i><span>Register</span></a></li>
+                                <li><a href="{{ path('app_register') }}"><i
+                                                class="fa fa-sign-in-alt"></i><span>Register</span></a></li>
                             {% endif %}
                         </ul>
                     </div>
@@ -52,16 +61,17 @@
         <div class="container">
             <nav class="navbar navbar-expand-lg">
                 <a class="navbar-brand" href="{{ path('home') }}">
-                    <img class="logo_light" src="/assets/images/logo_light.png" alt="logo" />
-                    <img class="logo_dark" src="/assets/images/logo_dark.png" alt="logo" />
+                    <img class="logo_light" src="/assets/images/logo_light.png" alt="logo"/>
+                    <img class="logo_dark" src="/assets/images/logo_dark.png" alt="logo"/>
                 </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-expanded="false">
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                        data-target="#navbarSupportedContent" aria-expanded="false">
                     <span class="ion-android-menu"></span>
                 </button>
                 <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
                     <ul class="navbar-nav">
                         <li class="dropdown">
-                            <a  class="nav-link" href="{{ path('home') }}">Home</a>
+                            <a class="nav-link" href="{{ path('home') }}">Home</a>
                         </li>
                         <li class="dropdown">
                             <a class=" nav-link" href="#" data-toggle="dropdown">Pages</a>
@@ -82,46 +92,53 @@
                     </ul>
                 </div>
                 <ul class="navbar-nav attr-nav align-items-center">
-                    <li><a href="javascript:void(0);" class="nav-link search_trigger"><i class="linearicons-magnifier"></i></a>
+                    <li><a href="javascript:void(0);" class="nav-link search_trigger"><i
+                                    class="linearicons-magnifier"></i></a>
                         <div class="search_wrap">
                             <span class="close-search"><i class="ion-ios-close-empty"></i></span>
                             <form>
                                 <input type="text" placeholder="Search" class="form-control" id="search_input">
                                 <button type="submit" class="search_icon"><i class="ion-ios-search-strong"></i></button>
                             </form>
-                        </div><div class="search_overlay"></div>
+                        </div>
+                        <div class="search_overlay"></div>
                     </li>
                     <li class="dropdown cart_dropdown">
-                        <a class="nav-link cart_trigger" href="#" data-toggle="dropdown"><i class="linearicons-cart"></i>
+                        <a class="nav-link cart_trigger" href="#" data-toggle="dropdown"><i
+                                    class="linearicons-cart"></i>
                             <span class="cart_count">
-                                {% set quantity = 0 %}
-                                {% for element in app.session.get('cartData') %}
-                                    {% set quantity = quantity + element.quantity %}
-                                {% endfor %}
-                                {{ quantity }}
+                                {% if app.session.get('cart') %}
+                                    {{ app.session.get('cartData').data.quantity_cart }}
+                                {% else %}
+                                    0
+                                {% endif %}
                             </span>
                         </a>
                         <div class="cart_box dropdown-menu dropdown-menu-right">
                             <ul class="cart_list">
-                                {% if app.session.get('cartData') %}
-                                    {% set subTotal = 0 %}
-                                    {% for element in app.session.get('cartData') %}
-                                        {% set subTotal = subTotal + ( element.quantity * element.product.price / 100) %}
-                                        <li>
-                                            <a href="{{ path('cart_delete_all', {'id': element.product.id }) }}" class="item_remove"><i class="ion-close"></i></a>
-                                            <a href="#"><img src="/assets/uploads/products/{{ element.product.image }}" alt="{{ element.product.name }}">{{ element.product.name }}</a>
-                                            <span class="cart_quantity"> {{ element.quantity}} <span class="cart_amount"> <span class="price_symbole">$</span></span>{{ element.product.price / 100 }}</span>
-                                        </li>
-                                    {% endfor %}
-                                {% else %}
-                                    <li>Your cart is empty !</li>
-                                {% endif %}
+                                {% if app.session.get('cart') %}
+                                {% for element in app.session.get('cartData').products %}
+                                    <li>
+                                        <a href="{{ path('cart_delete_all', {'id': element.product.id }) }}"
+                                           class="item_remove"><i class="ion-close"></i></a>
+                                        <a href="#"><img src="/assets/uploads/products/{{ element.product.image }}"
+                                                         alt="{{ element.product.name }}">{{ element.product.name }}</a>
+                                        <span class="cart_quantity"> {{ element.quantity }} <span
+                                                    class="cart_amount"> <span
+                                                        class="price_symbole">$</span></span>{{ element.product.price / 100 }}</span>
+                                    </li>
+                                {% endfor %}
                             </ul>
-                            {% if app.session.get('cartData') %}
-                                <div class="cart_footer">
-                                    <p class="cart_total"><strong>Subtotal:</strong> <span class="cart_price"> <span class="price_symbole">$</span></span>${{ subTotal }}</p>
-                                    <p class="cart_buttons"><a href="{{ path('cart') }}" class="btn btn-fill-line rounded-0 view-cart">View Cart</a><a href="#" class="btn btn-fill-out rounded-0 checkout">Checkout</a></p>
-                                </div>
+                            <div class="cart_footer">
+                                <p class="cart_total"><strong>Subtotal TTC:</strong> <span class="cart_price"> <span
+                                                class="price_symbole">$</span></span>{{ app.session.get('cartData').data.subTotalTTC }}</p>
+                                <p class="cart_buttons"><a href="{{ path('cart') }}"
+                                                           class="btn btn-fill-line rounded-0 view-cart">View Cart</a><a
+                                            href="{{ path('checkout') }}" class="btn btn-fill-out rounded-0 checkout">Checkout</a>
+                                </p>
+                            </div>
+                            {% else %}
+                                <p>Your cart is empty !</p>
                             {% endif %}
                         </div>
                     </li>

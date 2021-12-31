@@ -10,6 +10,7 @@ class CartServices {
 
     private SessionInterface $session;
     private ProductRepository $repoProduct;
+    private float $tva = 0.2;
 
 
     public function __construct(SessionInterface $session, ProductRepository $repoProduct)
@@ -79,26 +80,37 @@ class CartServices {
       return $this->session->get("cart", []);
     }
 
-    public function getFullCart()
+    public function getFullCart(): array
     {
         $cart = $this->getCart();
 
         $fullCart = [];
+        $quantity_cart = 0;
+        $subTotal = 0;
 
         foreach ($cart as $id => $quantity) {
             $product = $this->repoProduct->find($id);
 
             if($product) {
                 // produit récupéré
-                $fullCart[] = [
+                $fullCart["products"][] = [
                       "quantity" => $quantity,
                       "product" => $product
                 ];
+                $quantity_cart += $quantity;
+                $subTotal += $quantity * $product->getPrice() / 100;
             } else {
                 // id incorrect
                 $this->deleteFromCart($id);
             }
         }
+
+        $fullCart["data"] = [
+            "quantity_cart" => $quantity_cart,
+            "subTotal" => $subTotal,
+            "taxe"  => round($subTotal * $this->tva, 2),
+            "subTotalTTC" => round(($subTotal + ($subTotal*$this->tva)), 2)
+        ];
 
         return $fullCart;
     }
