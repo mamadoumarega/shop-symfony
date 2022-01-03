@@ -6,9 +6,9 @@ use App\Repository\CartDetailsRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=OrderDetailsRepository::class)
+ * @ORM\Entity(repositoryClass=CartDetailsRepository::class)
  */
-class OrderDetails
+class CartDetails
 {
     /**
      * @ORM\Id
@@ -48,10 +48,10 @@ class OrderDetails
     private ?float $subTotalTTC;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Order::class, inversedBy="orderDetails")
+     * @ORM\ManyToOne(targetEntity=Cart::class, inversedBy="cartDetails")
      * @ORM\JoinColumn(nullable=false)
      */
-    private ?Order $orders;
+    private ?Cart $carts;
 
     public function getId(): ?int
     {
@@ -130,14 +130,14 @@ class OrderDetails
         return $this;
     }
 
-    public function getOrders(): ?Order
+    public function getCarts(): ?Cart
     {
-        return $this->orders;
+        return $this->carts;
     }
 
-    public function setOrders(?Order $orders): self
+    public function setCarts(?Cart $carts): self
     {
-        $this->orders = $orders;
+        $this->carts = $carts;
 
         return $this;
     }

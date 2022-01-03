@@ -12,7 +12,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method CartDetails[]    findAll()
  * @method CartDetails[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class OrderDetailsRepository extends ServiceEntityRepository
+class CartDetailsRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -20,7 +20,7 @@ class OrderDetailsRepository extends ServiceEntityRepository
     }
 
     // /**
-    //  * @return OrderDetails[] Returns an array of OrderDetails objects
+    //  * @return CartDetails[] Returns an array of CartDetails objects
     //  */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class OrderDetailsRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?OrderDetails
+    public function findOneBySomeField($value): ?CartDetails
     {
         return $this->createQueryBuilder('o')
             ->andWhere('o.exampleField = :val')
