@@ -2,6 +2,10 @@
 
 {% block title %} Checkout AliExprass{% endblock %}
 
+{% block scriptStripe %}
+    <script src="https://js.stripe.com/v3/"></script>
+{% endblock scriptStripe %}
+
 {% block body %}
 
     {{ include("partials/title-section.html.twig", {'name':'Checkout'}) }}
@@ -15,26 +19,27 @@
                         <h4> Please verify your delivery Address</h4>
                         <div class="content" id="address">
                             {{ address | replace({'[spr]' : '<br>'}) | raw }}
-                            <a href="{{ path('address_edit', {'id': address.id }) }}" class="btn btn-fill-out mt-1">Edit Address</a>
+                            <a href="{{ path('address_edit', {'id': address.id }) }}" class="btn btn-fill-out mt-1">Edit
+                                Address</a>
                             <a href="{{ path('checkout_edit') }}" class="btn btn-fill-out mt-1">Change Address</a>
                         </div>
                     </div>
                     <div class="heading_s1">
                         <h4>Please verify your carrier</h4>
                         <div class="content" id="carrier">
-                            {{ carrier | replace({'[spr]' : '<br>'}) | raw  }}
+                            {{ carrier | replace({'[spr]' : '<br>'}) | raw }}
                             <a class="btn btn-fill-out" href="{{ path('checkout_edit') }}">Change Carrier</a>
                         </div>
                     </div>
                     {% if informations %}
-                    <div class="heading_s1" id="information">
-                        <h4>Please verify your additional informations</h4>
-                        <div class="form-group mb-0">
-                            <label>
+                        <div class="heading_s1" id="information">
+                            <h4>Please verify your additional informations</h4>
+                            <div class="form-group mb-0">
+                                <label>
                                     {{ informations }}
-                            </label>
+                                </label>
+                            </div>
                         </div>
-                    </div>
                     {% endif %}
                 </div>
 
@@ -72,7 +77,7 @@
                                 </tr>
                                 <tr>
                                     <th>Shipping {{ carrier.name }}</th>
-                                    <td class="product-subtotal">${{ carrier.price / 100}}</td>
+                                    <td class="product-subtotal">${{ carrier.price / 100 }}</td>
                                 </tr>
                                 <tr>
                                     <th>Total</th>
@@ -87,7 +92,7 @@
                                 <h4>Payment</h4>
                             </div>
                             <button type="submit" id="checkout-button" class="btn btn-fill-out btn-block">
-                                Paid ${{ cart.data.subTotalTTC + (carrier.price / 100) }}
+                                <a href="{{ path('create-checkout-session', {'reference': reference }) }}">Paid | ${{ cart.data.subTotalTTC + (carrier.price / 100) }}</a>
                             </button>
                         </div>
                     </div>
@@ -97,5 +102,7 @@
         </div>
     </div>
 
-
 {% endblock %}
+
+
+

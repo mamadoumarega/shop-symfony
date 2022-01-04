@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=OrderRepository::class)
+ * @ORM\Entity(repositoryClass="App\Repository\OrderRepository")
  * @ORM\Table(name="`order`")
  */
 class Order
@@ -74,7 +74,7 @@ class Order
     /**
      * @ORM\Column(type="integer")
      */
-    private $quantity;
+    private ?int $quantity;
 
     /**
      * @ORM\Column(type="float")
@@ -90,6 +90,11 @@ class Order
      * @ORM\Column(type="float")
      */
     private ?float $subTotalTTC;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private ?string $stripeCheckoutSessionId;
 
     public function __construct()
     {
@@ -140,7 +145,7 @@ class Order
 
     public function getCarrierPrice(): ?float
     {
-        return $this->carrierPrice;
+        return $this->carrierPrice * 100;
     }
 
     public function setCarrierPrice(float $carrierPrice): self
@@ -254,7 +259,7 @@ class Order
 
     public function getSubTotalHT(): ?float
     {
-        return $this->subTotalHT;
+        return $this->subTotalHT * 100;
     }
 
     public function setSubTotalHT(float $subTotalHT): self
@@ -266,7 +271,7 @@ class Order
 
     public function getTaxe(): ?float
     {
-        return $this->taxe;
+        return $this->taxe * 100;
     }
 
     public function setTaxe(float $taxe): self
@@ -278,12 +283,24 @@ class Order
 
     public function getSubTotalTTC(): ?float
     {
-        return $this->subTotalTTC;
+        return $this->subTotalTTC * 100;
     }
 
     public function setSubTotalTTC(float $subTotalTTC): self
     {
         $this->subTotalTTC = $subTotalTTC;
+
+        return $this;
+    }
+
+    public function getStripeCheckoutSessionId(): ?string
+    {
+        return $this->stripeCheckoutSessionId;
+    }
+
+    public function setStripeCheckoutSessionId(?string $stripeCheckoutSessionId): self
+    {
+        $this->stripeCheckoutSessionId = $stripeCheckoutSessionId;
 
         return $this;
     }

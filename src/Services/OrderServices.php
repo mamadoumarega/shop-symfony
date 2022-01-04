@@ -6,15 +6,18 @@ use App\Entity\Cart;
 use App\Entity\CartDetails;
 use App\Entity\Order;
 use App\Entity\OrderDetails;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class OrderServices
 {
     private EntityManagerInterface $manager;
+    private  ProductRepository $productRepository;
 
-    public function __construct(EntityManagerInterface $manager)
+    public function __construct(EntityManagerInterface $manager,  ProductRepository $productRepository)
     {
-        $this->manager =$manager;
+        $this->manager = $manager;
+        $this->productRepository = $productRepository;
     }
 
     public function createOrder(Cart $cart): Order
@@ -27,9 +30,9 @@ class OrderServices
             ->setDeliveryAddress($cart->getDeliveryAddress())
             ->setMoreInformations($cart->getMoreInformations())
             ->setQuantity($cart->getQuantity())
-            ->setSubTotalHT($cart->getSubTotalHT())
-            ->setTaxe($cart->getTaxe())
-            ->setSubTotalTTC($cart->getSubTotalTTC())
+            ->setSubTotalHT($cart->getSubTotalHT() / 100)
+            ->setTaxe($cart->getTaxe() / 100)
+            ->setSubTotalTTC($cart->getSubTotalTTC() / 100)
             ->setUser($cart->getUser())
             ->setCreatedAt($cart->getCreatedAt())
         ;
@@ -40,7 +43,8 @@ class OrderServices
 
         foreach ($products as $cart_product) {
             $orderDetails = new OrderDetails();
-            $orderDetails->setOrders($cart_product->getProductName())
+            $orderDetails->setOrders($order)
+                        ->setProductName($cart_product->getProductName())
                         ->setProductPrice($cart_product->getProductPrice())
                         ->setQuantity($cart_product->getQuantity())
                         ->setSubTotalHT($cart_product->getSubTotalHT())
@@ -66,7 +70,7 @@ class OrderServices
 
         $cart->setReference($reference)
             ->setCarrierName($carrier->getName())
-            ->setCarrierPrice($carrier->getPrice())
+            ->setCarrierPrice($carrier->getPrice()/100)
             ->setFullName($address->getFullName())
             ->setDeliveryAddress($address)
             ->setMoreInformations($informations)
@@ -107,6 +111,57 @@ class OrderServices
         return $reference;
     }
 
+    public function getLineItems(?Cart $cart): array
+    {
+        $cartDetails = $cart->getCartDetails();
+
+        $line_items = [];
+
+        foreach ($cartDetails as $details) {
+
+           $product = $this->productRepository->findOneByName($details->getProductName());
+
+            $line_items[] = [
+                'price_data' => [
+                    'currency' => 'usd',
+                    'unit_amount' => $product->getPrice(),
+                    'product_data' => [
+                        'name' => $product->getName(),
+                        'images' => [ $_ENV['YOUR_DOMAIN'].'/uploads/products/'.$product->getImage()],
+                    ]
+                ],
+                'quantity' => $details->getQuantity(),
+            ];
+        }
+
+        //Carrier
+        $line_items[] = [
+            'price_data' => [
+                'currency' => 'usd',
+                'unit_amount' => $cart->getCarrierPrice(),
+                'product_data' => [
+                    'name' => 'Carrier ('.$cart->getCarrierName().')',
+                ]
+            ],
+            'quantity' => 1,
+        ];
+
+        //Taxe
+        $line_items[] = [
+            'price_data' => [
+                'currency' => 'usd',
+                'unit_amount' => $cart->getTaxe(),
+                'product_data' => [
+                    'name' => 'TVA (20%)',
+                ]
+            ],
+            'quantity' => 1,
+        ];
+
+        return $line_items;
+
+    }
+
     public function generateUuid(): string
     {
         // Initialise le generateur de nombre aleatoires Mersenne Twister
@@ -128,6 +183,8 @@ class OrderServices
             .substr($chartid, 0, 8)
         ;
     }
+
+
 
 
 }

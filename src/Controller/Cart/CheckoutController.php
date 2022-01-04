@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Cart;
 
 use App\Form\CheckoutType;
 use App\Services\CartServices;
@@ -96,6 +96,7 @@ class CheckoutController extends AbstractController
                 'address' => $address,
                 'carrier' => $carrier,
                 'informations' => $informations,
+                 'reference' => $reference,
                 'checkout' => $form->createView()
             ]);
         }

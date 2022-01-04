@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Categories;
 use App\Entity\Product;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,7 +15,7 @@ class DataLoaderController extends AbstractController
     /**
      * @Route("/data", name="data_loader")
      */
-    public function index(EntityManagerInterface $manager): Response
+    public function index(EntityManagerInterface $manager, UserRepository $userRepository): Response
     {
         $file_product = dirname(__DIR__, 2) ."\product.json";
         $data_products = json_decode(file_get_contents($file_product), true);
@@ -33,7 +34,7 @@ class DataLoaderController extends AbstractController
                     ->setImage($data_category['image'])
            ;
 
-           $manager->persist($category);
+           //$manager->persist($category);
            $categories[] = $category;
        }
 
@@ -51,10 +52,13 @@ class DataLoaderController extends AbstractController
                    ->setSlug($data_product['slug'])
            ;
 
-           $manager->persist($product);
+           //$manager->persist($product);
            $products[] = $product;
 
        }
+
+       //$user = $userRepository->find(1);
+       //$user->setRoles(['ROLE_ADMIN']);
 
        //$manager->flush();
 

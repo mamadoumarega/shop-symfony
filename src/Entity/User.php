@@ -91,6 +91,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
+    public function getFullName() : ?string
+    {
+        return $this->firstname.' '.$this->lastname;
+
+    }
     public function setEmail(string $email): self
     {
         $this->email = $email;
