@@ -4,6 +4,7 @@ namespace App\Controller\Stripe;
 
 use App\Entity\Order;
 use App\Services\CartServices;
+use App\Services\StockManagerServices;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,7 +15,7 @@ class StripeSuccessPaymentController extends AbstractController
     /**
      * @Route("/stripe-success-payment/{stripeCheckoutSessionId}", name="stripe-success-payment")
      */
-    public function index(?Order $order, CartServices $cartServices, EntityManagerInterface $manager): Response
+    public function index(?Order $order, CartServices $cartServices, EntityManagerInterface $manager, StockManagerServices $stockManager): Response
     {
         if(!$order || $order->getUser() !== $this->getUser()) {
             $this->redirectToRoute("home");
@@ -23,6 +24,10 @@ class StripeSuccessPaymentController extends AbstractController
         if(!$order->getIsPaid()){
             // commande payée
             $order->setIsPaid(true);
+
+            //destockage
+            $stockManager->deStock($order);
+
             // mettre à jour la BDD
             $manager->flush();
 

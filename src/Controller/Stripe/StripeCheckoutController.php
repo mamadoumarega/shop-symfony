@@ -3,8 +3,6 @@
 namespace App\Controller\Stripe;
 
 use App\Entity\Cart;
-use App\Entity\Order;
-use App\Services\CartServices;
 use App\Services\OrderServices;
 use Doctrine\ORM\EntityManagerInterface;
 use Stripe\Checkout\Session;

@@ -25,6 +25,7 @@ class HomeController extends AbstractController
 
 
         $productBestSeller = $productRepository->findByIsBestSeller(1);
+        //dd($productBestSeller);
 
         $productSpecialOffer = $productRepository->findByIsSpecialOffer(1);
 

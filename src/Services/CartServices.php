@@ -92,6 +92,12 @@ class CartServices {
             $product = $this->repoProduct->find($id);
 
             if($product) {
+                // Verify quantity in cart
+                if($quantity > $product->getQuantity()) {
+                    $quantity = $product->getQuantity();
+                    $cart[$id] = $quantity;
+                    $this->updateCart($cart);
+                }
                 // produit récupéré
                 $fullCart["products"][] = [
                       "quantity" => $quantity,
